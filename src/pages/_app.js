@@ -27,7 +27,7 @@ const App = (props) => {
     <CacheProvider value={emotionCache}>
       <Head>
         <title>
-          Devias Kit
+          AnBTech Webffice
         </title>
         <meta
           name="viewport"
@@ -37,12 +37,12 @@ const App = (props) => {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <AuthProvider>
           <ThemeProvider theme={theme}>
-            <CssBaseline />
+            <CssBaseline /> 
             <AuthConsumer>
               {
                 (auth) => auth.isLoading
                   ? <SplashScreen />
-                  : getLayout(<Component {...pageProps} />)
+                  : getLayout(<Component {...pageProps} />) 
               }
             </AuthConsumer>
           </ThemeProvider>

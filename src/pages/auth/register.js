@@ -8,16 +8,17 @@ import { useAuth } from 'src/hooks/use-auth';
 import { Layout as AuthLayout } from 'src/layouts/auth/layout';
 
 const Page = () => {
-  const router = useRouter();
+  const router = useRouter(); 
   const auth = useAuth();
-  const formik = useFormik({
-    initialValues: {
+  const formik = useFormik({ 
+    initialValues: { 
+      id: '',
       email: '',
       name: '',
       password: '',
       submit: null
     },
-    validationSchema: Yup.object({
+    validationSchema: Yup.object({ 
       email: Yup
         .string()
         .email('Must be a valid email')
@@ -32,8 +33,10 @@ const Page = () => {
         .max(255)
         .required('Password is required')
     }),
-    onSubmit: async (values, helpers) => {
+    onSubmit: async (values, helpers) => { 
       try {
+        window.localStorage.setItem("userID", JSON.stringify(values.email))
+        console.log("UserID", window.localStorage.getItem("userID"));
         await auth.signUp(values.email, values.name, values.password);
         router.push('/');
       } catch (err) {
@@ -79,7 +82,7 @@ const Page = () => {
                 color="text.secondary"
                 variant="body2"
               >
-                Already have an account?
+                이미 계정이 있습니까?
                 &nbsp;
                 <Link
                   component={NextLink}

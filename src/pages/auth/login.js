@@ -25,8 +25,8 @@ const Page = () => {
   const [method, setMethod] = useState('email');
   const formik = useFormik({
     initialValues: {
-      email: 'demo@devias.io',
-      password: 'Password123!',
+      email: 'admin@anbtech.co.kr',
+      password: 'admin',
       submit: null
     },
     validationSchema: Yup.object({
@@ -71,7 +71,7 @@ const Page = () => {
     <>
       <Head>
         <title>
-          Login | Devias Kit
+          Login | Test Hompage
         </title>
       </Head>
       <Box
@@ -103,7 +103,7 @@ const Page = () => {
                 color="text.secondary"
                 variant="body2"
               >
-                Don&apos;t have an account?
+                계정을 생성하시겠습니까?
                 &nbsp;
                 <Link
                   component={NextLink}
@@ -159,7 +159,7 @@ const Page = () => {
                   />
                 </Stack>
                 <FormHelperText sx={{ mt: 1 }}>
-                  Optionally you can skip.
+                  이메일 및 패스워드를 입력하세요.
                 </FormHelperText>
                 {formik.errors.submit && (
                   <Typography
@@ -185,7 +185,7 @@ const Page = () => {
                   sx={{ mt: 3 }}
                   onClick={handleSkip}
                 >
-                  Skip authentication
+                  Account Skip
                 </Button>
                 <Alert
                   color="primary"
@@ -193,7 +193,7 @@ const Page = () => {
                   sx={{ mt: 3 }}
                 >
                   <div>
-                    You can use <b>demo@devias.io</b> and password <b>Password123!</b>
+                    관리자 ID <b>admin@anbtech.co.kr</b> 패스워드 <b>admin</b>
                   </div>
                 </Alert>
               </form>
@@ -204,10 +204,10 @@ const Page = () => {
                   sx={{ mb: 1 }}
                   variant="h6"
                 >
-                  Not available in the demo
+                  미 구현
                 </Typography>
                 <Typography color="text.secondary">
-                  To prevent unnecessary costs we disabled this feature in the demo.
+                  미 구현.
                 </Typography>
               </div>
             )}

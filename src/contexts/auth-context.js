@@ -1,5 +1,6 @@
-import { createContext, useContext, useEffect, useReducer, useRef } from 'react';
+import { createContext, useContext, useEffect, useReducer, useRef, Component } from 'react';
 import PropTypes from 'prop-types';
+import ApiService from "src/Service/ApiService"
 
 const HANDLERS = {
   INITIALIZE: 'INITIALIZE',
@@ -15,12 +16,11 @@ const initialState = {
 
 const handlers = {
   [HANDLERS.INITIALIZE]: (state, action) => {
-    const user = action.payload;
-
+    const user = action.payload; 
+    console.log('user', user);
     return {
       ...state,
       ...(
-        // if payload (user) is provided, then is authenticated
         user
           ? ({
             isAuthenticated: true,
@@ -55,8 +55,6 @@ const reducer = (state, action) => (
   handlers[action.type] ? handlers[action.type](state, action) : state
 );
 
-// The role of this context is to propagate authentication state through the App tree.
-
 export const AuthContext = createContext({ undefined });
 
 export const AuthProvider = (props) => {
@@ -65,7 +63,7 @@ export const AuthProvider = (props) => {
   const initialized = useRef(false);
 
   const initialize = async () => {
-    // Prevent from calling twice in development mode with React.StrictMode enabled
+    console.log("isAuthenticated", initialized.current);
     if (initialized.current) {
       return;
     }
@@ -81,11 +79,11 @@ export const AuthProvider = (props) => {
     }
 
     if (isAuthenticated) {
+      console.log("isAuthenticated", isAuthenticated);
       const user = {
-        id: '5e86809283e28b96d2d38537',
         avatar: '/assets/avatars/avatar-anika-visser.png',
-        name: 'Anika Visser',
-        email: 'anika.visser@devias.io'
+        name: 'admin',
+        email: 'admin@anbtech.co.kr'
       };
 
       dispatch({
@@ -115,10 +113,10 @@ export const AuthProvider = (props) => {
     }
 
     const user = {
-      id: '5e86809283e28b96d2d38537',
+      id: 'SkipID',
       avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: 'Anika Visser',
-      email: 'anika.visser@devias.io'
+      name: 'SKIP',
+      email: 'SKIP@anbtech.co.kr'
     };
 
     dispatch({
@@ -127,32 +125,74 @@ export const AuthProvider = (props) => {
     });
   };
 
-  const signIn = async (email, password) => {
-    if (email !== 'demo@devias.io' || password !== 'Password123!') {
-      throw new Error('Please check your email and password');
-    }
+  const signIn = async (_email, _password) => {
 
-    try {
-      window.sessionStorage.setItem('authenticated', 'true');
-    } catch (err) {
-      console.error(err);
-    }
-
-    const user = {
-      id: '5e86809283e28b96d2d38537',
-      avatar: '/assets/avatars/avatar-anika-visser.png',
-      name: 'Anika Visser',
-      email: 'anika.visser@devias.io'
-    };
-
-    dispatch({
-      type: HANDLERS.SIGN_IN,
-      payload: user
+    ApiService.checkUserByEmail(_email)
+    .then( res => {
+      if(!res.data.email)
+      {
+        console.log("test", res.data.email);
+        throw new Error('계정이 존재하지 않습니다.');
+      }
+      else{
+        if (_email !== 'admin@anbtech.co.kr' || _password !== 'admin') {
+          throw new Error('관리자 계정이 아닙니다.');
+        }
+        else{
+          const user = {
+            id: res.data.id,
+            avatar: res.data.avatar,
+            name: res.data.name,
+            email: res.data.email
+          };
+          console.log("test", res.data.email);
+          try {
+            window.sessionStorage.setItem('authenticated', 'true');
+          } catch (err) {
+            console.error(err);
+          }
+      
+          dispatch({
+            type: HANDLERS.SIGN_IN,
+            payload: user
+          });
+        }
+      }
+    })
+    .catch(err => {
+      console.log('loadUser() 에러', err);
     });
+
   };
 
-  const signUp = async (email, name, password) => {
-    throw new Error('Sign up is not implemented');
+  const signUp = async (_email, _name, _password) => {
+
+    ApiService.checkUserByEmail(_email)
+      .then( res => {
+        if(!res.data.email)
+        {
+          let user = {
+            name: _name,
+            password: _password,
+            email: _email,
+          }
+      
+          ApiService.addUser(user)
+          .then( res => {
+              this.setState({
+                message: user.name + '님이 성공적으로 등록되었습니다.'
+              })
+          })
+          .catch( err => {
+            console.log('saveUser() 에러', err);
+          });
+        }
+      })
+      .catch(err => {
+        console.log('loadUser() 에러', err);
+      });
+
+      throw new Error('이미 존재하는 계정입니다.');
   };
 
   const signOut = () => {
@@ -170,6 +210,7 @@ export const AuthProvider = (props) => {
         signUp,
         signOut
       }}
+      
     >
       {children}
     </AuthContext.Provider>
